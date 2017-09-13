@@ -1,0 +1,134 @@
+﻿<div class="row">
+    <h1>Agreement</h1>
+</div>
+<form #addform="ngForm" (ngSubmit)="onAddFormSubmit(addform)">
+    <div class="row">
+        <div class="form-group">
+            <div class="col-md-4">
+                <label for="name">Name</label>
+                <input type="text" class="form-control" name="name" id="name" [(ngModel)]="newAgreementModel.Name" #name="ngModel" required />
+                <div *ngIf="name.invalid && (name.dirty || name.touched)" class="alert alert-danger">
+                    <div *ngIf="name.errors.required">
+                        Name is required.
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label for="totalvalue">Total Value</label>
+                <input type="number" class="form-control" name="totalvalue" id="totalvalue" [(ngModel)]="newAgreementModel.Total" #totalvalue="ngModel" />
+            </div>
+            <div class="col-md-4">
+                <label for="terms">Payment Terms</label>
+                <input type="number" class="form-control" name="terms" id="terms" [(ngModel)]="newAgreementModel.Terms" #terms="ngModel" />
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group">
+            <div class="col-md-6">
+                <label for="startdate">Start Date</label>
+                <input type="date" class="form-control" name="startdate" id="startdate" [(ngModel)]="newAgreementModel.StartDate" #startdate="ngModel" required />
+                <div *ngIf="startdate.invalid && (startdate.dirty || startdate.touched)" class="alert alert-danger">
+                    <div *ngIf="startdate.errors.required">
+                        Start Date is required.
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label for="enddate">End Date</label>
+                <input type="date" class="form-control" name="enddate" id="enddate" [(ngModel)]="newAgreementModel.EndDate" #enddate="ngModel" required />
+                <div *ngIf="enddate.invalid && (enddate.dirty || enddate.touched)" class="alert alert-danger">
+                    <div *ngIf="enddate.errors.required">
+                        End Date is required.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group">
+            <div class="col-md-10">
+                <label for="description">Description</label>
+                <textarea class="form-control" name="description" id="description" [(ngModel)]="newAgreementModel.Description"></textarea>
+            </div>
+        </div>
+        <div class="col-md-2 center-block">
+            <button type="submit" style="margin-top:15px;" [disabled]="addform.invalid" class="btn btn-success">Add</button>
+        </div>
+    </div>
+</form>
+<div class="row">
+    <h3>List</h3>
+    <hr>
+</div>
+<div class="row" *ngIf="agreements?.length <= 0">
+    <span class="text-center">
+        No records exist.<br />
+        Please add new records
+    </span>
+</div>
+<div class="row">
+    <div style="overflow:auto" *ngIf="agreements?.length > 0">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <td class="sortable-header" (click)="setOrder('Name')">Name<span [hidden]="order != 'Name'"><span [hidden]="reverse">▼</span><span [hidden]="!reverse">▲</span></span></td>
+                    <td class="sortable-header" (click)="setOrder('Description')">Description<span [hidden]="order != 'Description'"><span [hidden]="reverse">▼</span><span [hidden]="!reverse">▲</span></span></td>
+                    <td class="sortable-header" (click)="setOrder('Total')">Total Value<span [hidden]="order != 'Total'"><span [hidden]="reverse">▼</span><span [hidden]="!reverse">▲</span></span></td>
+                    <td class="sortable-header" (click)="setOrder('StartDate')">End Date<span [hidden]="order != 'StartDate'"><span [hidden]="reverse">▼</span><span [hidden]="!reverse">▲</span></span></td>
+                    <td class="sortable-header" (click)="setOrder('EndDate')">End Date<span [hidden]="order != 'EndDate'"><span [hidden]="reverse">▼</span><span [hidden]="!reverse">▲</span></span></td>
+                    <td class="sortable-header" (click)="setOrder('Terms')">Payment Terms Date<span [hidden]="order != 'Terms'"><span [hidden]="reverse">▼</span><span [hidden]="!reverse">▲</span></span></td>
+                    <td></td>
+                    <td>
+                        <input type="button" value="Delete All" (click)="deleteAll()" class="btn btn-danger" />
+                    </td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let agreement of agreements | orderBy: order:reverse ;let i=idx">
+                    <ng-template [ngTemplateOutlet]="loadTemplate(agreement)" [ngOutletContext]="{ $implicit: agreement, idx: i }"></ng-template>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <ng-template #readOnlyTemplate let-agreement>
+        <td>{{agreement.Name}}</td>
+        <td>{{agreement.Description}}</td>
+        <td>{{agreement.Total}}</td>
+        <td>{{agreement.StartDate}}</td>
+        <td>{{agreement.EndDate}}</td>
+        <td>{{agreement.Terms}}</td>
+        <td>
+            <input type="button" value="Edit" class="btn btn-default" (click)="editAgreement(agreement)" />
+        </td>
+        <td>
+            <input type="button" value="Delete" (click)="deleteAgreement(agreement)" class="btn btn-danger" />
+        </td>
+    </ng-template>
+    <ng-template #editTemplate>
+        <td>
+            <input type="text" [(ngModel)]="selectedAgreement.Name"/>
+        </td>
+        <td>
+            <input type="text" [(ngModel)]="selectedAgreement.Description" />
+        </td>
+        <td>
+            <input type="number" [(ngModel)]="selectedAgreement.Total" />
+        </td>
+        <td>
+            <input type="date" [(ngModel)]="selectedAgreement.StartDate" />
+        </td>
+        <td>
+            <input type="date" [(ngModel)]="selectedAgreement.EndDate" />
+        </td>
+        <td>
+            <input type="number" [(ngModel)]="selectedAgreement.Terms" />
+        </td>
+        <td>
+            <input type="button" [disabled]="!editform.valid" value="Save" (click)="saveAgreement()" class="btn btn-success" />
+        </td>
+        <td>
+            <input type="button" value="Cancel" (click)="cancelEdit()" class="btn btn-warning" />
+        </td>
+    </ng-template>
+</div>
